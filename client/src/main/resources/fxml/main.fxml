@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:controller="fr.tdi.drone.client.controller.MainController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <BorderPane minHeight="400.0" minWidth="600.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <center>
+            <GridPane fx:id="grid" alignment="CENTER" gridLinesVisible="true" prefHeight="400.0" prefWidth="600.0" BorderPane.alignment="TOP_CENTER">
+            </GridPane>
+         </center>
+         <top>
+            <HBox alignment="CENTER" prefHeight="46.0" prefWidth="600.0" spacing="20.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="btnConnect" mnemonicParsing="false" text="Connect" onAction="#onConnectDisconnect" />
+                  <Button fx:id="btnClearLog" mnemonicParsing="false" text="Clear log" onAction="#btnClearLog" />
+                  <Button fx:id="btnQuit" mnemonicParsing="false" text="Quit" onAction="#btnQuitClick" />
+               </children>
+            </HBox>
+         </top>
+         <bottom>
+            <TextArea fx:id="logArea" editable="true" prefHeight="100.0" prefWidth="600.0" wrapText="true" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+   </children>
+</AnchorPane>
