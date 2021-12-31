@@ -159,12 +159,13 @@ public class DroneServiceImpl implements IDroneService {
 		    default:
 			break;
 		    }
-
-		    if (computeMove) {
-			DroneModel newDrone = moveDrone(d);
-			if (d.hasChanged(newDrone)) {
-			    droneModelSubject.onNext(d);
-			}
+		    // todo vérifier les déplacements par rapport à l'orientation
+		    d = moveDrone(d, computeMove);
+		    if (d.hasChanged(ref)) {
+			droneModelSubject.onNext(d);
+			ref.setAngle(d.getAngle());
+			ref.setPosX(d.getPosX());
+			ref.setPosY(d.getPosY());
 		    }
 
 		});
@@ -179,32 +180,34 @@ public class DroneServiceImpl implements IDroneService {
 	}
     }
 
-    private DroneModel moveDrone(DroneModel d) {
+    private DroneModel moveDrone(DroneModel d, boolean move) {
 	DroneModel clone = new DroneModel(d);
-	Orientation o = Orientation.forNumber((int) d.getAngle());
 	int x = 0;
 	int y = 0;
-	switch (o) {
-	case NORTH:
-	    y = 1;
-	    break;
-	case SOUTH:
-	    y = -1;
-	    break;
-	case EAST:
-	    x = 1;
-	    break;
-	case WEST:
-	    x = -1;
-	    break;
-	default:
-	    break;
+
+	if (move) {
+	    switch (Orientation.forNumber((int) d.getAngle())) {
+	    case NORTH:
+		x = -1;
+		break;
+	    case SOUTH:
+		x = 1;
+		break;
+	    case EAST:
+		y = -1;
+		break;
+	    case WEST:
+		y = 1;
+		break;
+	    default:
+		break;
+	    }
 	}
 
-	d.setPosX(d.getPosX() + x);
-	d.setPosY(d.getPosY() + y);
+	clone.setPosX(d.getPosX() + x);
+	clone.setPosY(d.getPosY() + y);
 
-	return zoneService.isMoveValid(d, currentZone) ? clone : d;
+	return zoneService.isMoveValid(clone, currentZone) ? clone : d;
 
     }
 

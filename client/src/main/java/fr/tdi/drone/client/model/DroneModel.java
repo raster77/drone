@@ -71,6 +71,7 @@ public class DroneModel {
     }
 
     public boolean hasChanged(DroneModel d) {
-	return angle.get() == d.getAngle() && posX.get() == d.getPosX() && posY.get() == d.getPosY() && id == d.getId();
+	return (id == d.getId())
+		&& (angle.get() != d.getAngle() || posX.get() != d.getPosX() || posY.get() != d.getPosY());
     }
 }
