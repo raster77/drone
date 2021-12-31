@@ -13,17 +13,17 @@ public enum Orientation
    */
   NORTH(0),
   /**
-   * <code>EAST = 1;</code>
+   * <code>EAST = 90;</code>
    */
-  EAST(1),
+  EAST(90),
   /**
-   * <code>SOUTH = 2;</code>
+   * <code>SOUTH = 180;</code>
    */
-  SOUTH(2),
+  SOUTH(180),
   /**
-   * <code>WEST = 3;</code>
+   * <code>WEST = 270;</code>
    */
-  WEST(3),
+  WEST(270),
   UNRECOGNIZED(-1),
   ;
 
@@ -32,17 +32,17 @@ public enum Orientation
    */
   public static final int NORTH_VALUE = 0;
   /**
-   * <code>EAST = 1;</code>
+   * <code>EAST = 90;</code>
    */
-  public static final int EAST_VALUE = 1;
+  public static final int EAST_VALUE = 90;
   /**
-   * <code>SOUTH = 2;</code>
+   * <code>SOUTH = 180;</code>
    */
-  public static final int SOUTH_VALUE = 2;
+  public static final int SOUTH_VALUE = 180;
   /**
-   * <code>WEST = 3;</code>
+   * <code>WEST = 270;</code>
    */
-  public static final int WEST_VALUE = 3;
+  public static final int WEST_VALUE = 270;
 
 
   public final int getNumber() {
@@ -64,9 +64,9 @@ public enum Orientation
   public static Orientation forNumber(int value) {
     switch (value) {
       case 0: return NORTH;
-      case 1: return EAST;
-      case 2: return SOUTH;
-      case 3: return WEST;
+      case 90: return EAST;
+      case 180: return SOUTH;
+      case 270: return WEST;
       default: return null;
     }
   }

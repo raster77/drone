@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
 import fr.tdi.drone.common.messages.Message;
-import fr.tdi.drone.server.helper.MessageHelper;
+import fr.tdi.drone.server.helper.MessageGeneratorHelper;
 import fr.tdi.drone.server.server.DroneServer;
 
 public class ServerCommandManager {
@@ -36,7 +36,7 @@ public class ServerCommandManager {
 	    try {
 		String c = cmd.generate();
 		LOGGER.info("Command: {}", c);
-		Optional<Message> optMsg = MessageHelper.generateMessageFromCommand(cmd);
+		Optional<Message> optMsg = MessageGeneratorHelper.generateMessageFromCommand(cmd);
 		if (optMsg.isPresent()) {
 		    server.sendMessage(optMsg.get());
 		}
@@ -61,8 +61,8 @@ public class ServerCommandManager {
 
     private void initCommands() {
 	commands.put(new Command("zone", 2), "zone: initialize zone. Parameters are width (int) and height (int).");
-	commands.put(new Command("drone", 3),
-		"drone: create a drone. Parameters are id (int), x (int) position and y (int) position.");
+	commands.put(new Command("drone", 4),
+		"drone: create a drone. Parameters are id (int), x (int) position, y (int) position and orientation (N, S, E, W).");
 	commands.put(new Command("move", 2),
 		"move: move drone. Parameters are id (int), and sequence of orders (A, D or G).");
 	commands.put(new Command("clear", 0), "clear : delete all drones.");

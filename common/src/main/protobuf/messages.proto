@@ -6,9 +6,9 @@ option java_package = "fr.tdi.drone.common.messages";
 
 enum Orientation {
   NORTH = 0;
-  EAST = 1;
-  SOUTH = 2;
-  WEST = 3;
+  EAST = 90;
+  SOUTH = 180;
+  WEST = 270;
 }
 
 enum Movement {
@@ -33,6 +33,11 @@ message Drone {
   int32 id = 1;
   Position position = 2;
   repeated Movement moves = 3;
+}
+
+message DroneMove {
+  int32 id = 1;
+  repeated Movement moves = 2;
 }
 
 message Zone {

@@ -3,9 +3,11 @@ package fr.tdi.drone.client.service;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -14,6 +16,7 @@ import fr.tdi.drone.client.model.DroneModel;
 import fr.tdi.drone.client.model.ZoneModel;
 import fr.tdi.drone.client.websocket.DroneClient;
 import fr.tdi.drone.common.messages.Drone;
+import fr.tdi.drone.common.messages.DroneMove;
 import fr.tdi.drone.common.messages.Message;
 import fr.tdi.drone.common.messages.Orientation;
 import fr.tdi.drone.common.messages.Zone;
@@ -24,12 +27,18 @@ import io.reactivex.subjects.Subject;
 @Singleton
 public class DroneServiceImpl implements IDroneService {
 
+    @Inject
+    private ZoneServiceImpl zoneService;
+
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DroneServiceImpl.class);
+    private static final int DROITE = 90;
+    private static final int GAUCHE = -90;
     private final List<DroneModel> droneModels = new ArrayList<>();
     private final Subject<DroneModel> droneModelSubject = BehaviorSubject.create();
 
     private final Subject<ZoneModel> zoneModel = BehaviorSubject.create();
     private final DroneClient client = new DroneClient();
+    private ZoneModel currentZone = new ZoneModel(0, 0);
 
     @Override
     public Observable<DroneModel> getDroneModel() {
@@ -103,7 +112,8 @@ public class DroneServiceImpl implements IDroneService {
     private void processZone(Message msg) {
 	try {
 	    Zone z = Zone.parseFrom(msg.getDatas());
-	    zoneModel.onNext(new ZoneModel(z.getWidth(), z.getHeight()));
+	    currentZone.setZone(z.getWidth(), z.getHeight());
+	    zoneModel.onNext(currentZone);
 	} catch (InvalidProtocolBufferException e) {
 	    e.printStackTrace();
 	}
@@ -127,13 +137,75 @@ public class DroneServiceImpl implements IDroneService {
 
     private void processMove(Message msg) {
 	try {
-	    Drone drone = Drone.parseFrom(msg.getDatas());
-	    DroneModel refDrone = droneModels.stream().filter(d -> d.getId() == drone.getId()).findFirst().orElse(null);
-	    droneModels.add(mapDroneToModel(drone, refDrone));
+	    DroneMove move = DroneMove.parseFrom(msg.getDatas());
+	    Optional<DroneModel> optRefDrone = droneModels.stream().filter(d -> d.getId() == move.getId()).findFirst();
+
+	    if (optRefDrone.isPresent()) {
+		DroneModel ref = optRefDrone.get();
+		move.getMovesList().forEach(m -> {
+
+		    DroneModel d = new DroneModel(ref);
+		    boolean computeMove = false;
+		    switch (m) {
+		    case A:
+			computeMove = true;
+			break;
+		    case D:
+			d.setAngle(d.getAngle() + DROITE);
+			break;
+		    case G:
+			d.setAngle(d.getAngle() + GAUCHE);
+			break;
+		    default:
+			break;
+		    }
+
+		    if (computeMove) {
+			DroneModel newDrone = moveDrone(d);
+			if (d.hasChanged(newDrone)) {
+			    droneModelSubject.onNext(d);
+			}
+		    }
+
+		});
+
+		// todo vérifier validité déplacements
+
+	    }
+
 	    droneModelSubject.onNext(droneModels.get(droneModels.size() - 1));
 	} catch (InvalidProtocolBufferException e) {
 	    e.printStackTrace();
 	}
+    }
+
+    private DroneModel moveDrone(DroneModel d) {
+	DroneModel clone = new DroneModel(d);
+	Orientation o = Orientation.forNumber((int) d.getAngle());
+	int x = 0;
+	int y = 0;
+	switch (o) {
+	case NORTH:
+	    y = 1;
+	    break;
+	case SOUTH:
+	    y = -1;
+	    break;
+	case EAST:
+	    x = 1;
+	    break;
+	case WEST:
+	    x = -1;
+	    break;
+	default:
+	    break;
+	}
+
+	d.setPosX(d.getPosX() + x);
+	d.setPosY(d.getPosY() + y);
+
+	return zoneService.isMoveValid(d, currentZone) ? clone : d;
+
     }
 
     private DroneModel mapDroneToModel(Drone d, DroneModel m) {

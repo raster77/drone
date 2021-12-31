@@ -19,6 +19,13 @@ public class DroneModel {
 	this.id = id;
     }
 
+    public DroneModel(DroneModel d) {
+	id = d.getId();
+	posX.set(d.getPosX());
+	posY.set(d.getPosY());
+	angle.set(d.getAngle());
+    }
+
     public int getId() {
 	return id;
     }
@@ -61,5 +68,9 @@ public class DroneModel {
 
     public void setAngle(double angle) {
 	this.angle.set(angle);
+    }
+
+    public boolean hasChanged(DroneModel d) {
+	return angle.get() == d.getAngle() && posX.get() == d.getPosX() && posY.get() == d.getPosY() && id == d.getId();
     }
 }
