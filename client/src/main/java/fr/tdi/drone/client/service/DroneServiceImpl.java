@@ -32,8 +32,8 @@ public class DroneServiceImpl implements IDroneService {
     private ZoneServiceImpl zoneService;
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DroneServiceImpl.class);
-    private static final int DROITE = -90;
-    private static final int GAUCHE = 90;
+    private static final int DROITE = 90;
+    private static final int GAUCHE = -90;
     private final List<DroneModel> droneModels = new ArrayList<>();
     private final Subject<DroneModel> droneModelSubject = BehaviorSubject.create();
 
@@ -113,7 +113,7 @@ public class DroneServiceImpl implements IDroneService {
     private void processZone(Message msg) {
 	try {
 	    Zone z = Zone.parseFrom(msg.getDatas());
-	    currentZone.setZone(z.getWidth(), z.getHeight());
+	    currentZone.setZone(z.getWidth() + 1, z.getHeight() + 1);
 	    zoneModel.onNext(currentZone);
 	} catch (InvalidProtocolBufferException e) {
 	    e.printStackTrace();
