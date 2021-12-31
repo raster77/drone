@@ -8,16 +8,16 @@ public class OrientationHelper {
 	// Empty
     }
 
-    public double getAngleFromOrientation(Orientation o) {
+    public static double getAngleFromOrientation(Orientation o) {
 	switch (o) {
 	case EAST:
-	    return 270;
+	    return 90;
 	case NORTH:
 	    return 0;
 	case SOUTH:
 	    return 180;
 	case WEST:
-	    return 90;
+	    return 270;
 	default:
 	    return 0;
 	}

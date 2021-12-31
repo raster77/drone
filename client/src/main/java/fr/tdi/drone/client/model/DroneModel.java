@@ -67,7 +67,8 @@ public class DroneModel {
     }
 
     public void setAngle(double angle) {
-	this.angle.set(angle);
+	double a = angle < 0 ? angle + 360 : angle;
+	this.angle.set(a >= 360 ? 0 : a);
     }
 
     public boolean hasChanged(DroneModel d) {

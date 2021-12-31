@@ -15,6 +15,7 @@ import ch.qos.logback.classic.Logger;
 import fr.tdi.drone.client.model.DroneModel;
 import fr.tdi.drone.client.model.ZoneModel;
 import fr.tdi.drone.client.websocket.DroneClient;
+import fr.tdi.drone.common.helper.OrientationHelper;
 import fr.tdi.drone.common.messages.Drone;
 import fr.tdi.drone.common.messages.DroneMove;
 import fr.tdi.drone.common.messages.Message;
@@ -31,8 +32,8 @@ public class DroneServiceImpl implements IDroneService {
     private ZoneServiceImpl zoneService;
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DroneServiceImpl.class);
-    private static final int DROITE = 90;
-    private static final int GAUCHE = -90;
+    private static final int DROITE = -90;
+    private static final int GAUCHE = 90;
     private final List<DroneModel> droneModels = new ArrayList<>();
     private final Subject<DroneModel> droneModelSubject = BehaviorSubject.create();
 
@@ -194,10 +195,10 @@ public class DroneServiceImpl implements IDroneService {
 		x = 1;
 		break;
 	    case EAST:
-		y = -1;
+		y = 1;
 		break;
 	    case WEST:
-		y = 1;
+		y = -1;
 		break;
 	    default:
 		break;
@@ -217,20 +218,7 @@ public class DroneServiceImpl implements IDroneService {
 	}
 	m.setPosX(d.getPosition().getX());
 	m.setPosY(d.getPosition().getY());
-	m.setAngle(getValueFromOrientation(d.getPosition().getOrientation()));
+	m.setAngle(OrientationHelper.getAngleFromOrientation(d.getPosition().getOrientation()));
 	return m;
-    }
-
-    private double getValueFromOrientation(Orientation o) {
-	switch (o) {
-	case NORTH:
-	    return 0;
-	case SOUTH:
-	    return 180;
-	case EAST:
-	    return 270;
-	default:
-	    return 90;
-	}
     }
 }
