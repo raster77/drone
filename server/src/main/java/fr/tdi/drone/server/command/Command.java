@@ -46,7 +46,9 @@ public class Command {
     }
 
     public void addParameter(String arg) {
-	parameters.add(arg);
+	if (!arg.trim().isEmpty()) {
+	    parameters.add(arg);
+	}
     }
 
     public String generate() throws CommandException {

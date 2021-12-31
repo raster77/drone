@@ -13,6 +13,7 @@ import fr.tdi.drone.common.messages.Movement;
 import fr.tdi.drone.common.messages.Position;
 import fr.tdi.drone.common.messages.Zone;
 import fr.tdi.drone.server.command.Command;
+import fr.tdi.drone.server.command.CommandException;
 
 public class MessageGeneratorHelper {
 
@@ -20,23 +21,27 @@ public class MessageGeneratorHelper {
 	// Empty
     }
 
-    public static Optional<Message> generateMessageFromCommand(Command cmd) {
+    public static Optional<Message> generateMessageFromCommand(Command cmd) throws CommandException {
 	Message msg = null;
-	switch (cmd.getVerb()) {
-	case "zone":
-	    msg = getZoneMessage(cmd);
-	    break;
-	case "drone":
-	    msg = getDroneMessage(cmd);
-	    break;
-	case "move":
-	    msg = getMoveMessage(cmd);
-	    break;
-	default:
-	    msg = null;
-	}
+	try {
+	    switch (cmd.getVerb()) {
+	    case "zone":
+		msg = getZoneMessage(cmd);
+		break;
+	    case "drone":
+		msg = getDroneMessage(cmd);
+		break;
+	    case "move":
+		msg = getMoveMessage(cmd);
+		break;
+	    default:
+		msg = null;
+	    }
 
-	return Optional.of(msg);
+	    return Optional.of(msg);
+	} catch (Exception e) {
+	    throw new CommandException("Invalid command.");
+	}
     }
 
     private static Message getZoneMessage(Command cmd) {
