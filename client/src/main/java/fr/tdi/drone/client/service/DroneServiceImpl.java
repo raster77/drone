@@ -98,16 +98,6 @@ public class DroneServiceImpl implements IDroneService {
 	    processMove(msg);
 	    break;
 	}
-
-	// todo faire les contrôles sur les positions et déplacements
-	/*
-	 * try { Drone drone = Drone.parseFrom(msg.getDatas()); DroneModel refDrone =
-	 * droneModels.stream().filter(d -> d.getId() ==
-	 * drone.getId()).findFirst().orElse(null);
-	 * droneModels.add(mapDroneToModel(drone, refDrone));
-	 * droneModelSubject.onNext(droneModels.get(droneModels.size() - 1)); } catch
-	 * (InvalidProtocolBufferException e) { e.printStackTrace(); }
-	 */
     }
 
     private void processZone(Message msg) {
@@ -129,8 +119,6 @@ public class DroneServiceImpl implements IDroneService {
 	    List<DroneModel> drones = new ArrayList<>();
 	    drones.add(currentDrone);
 	    drones.forEach(droneModelSubject::onNext);
-	    // droneModelSubject.onNext(refDrone == null ?
-	    // droneModels.get(droneModels.size() - 1) : refDrone);
 	} catch (InvalidProtocolBufferException e) {
 	    e.printStackTrace();
 	}
@@ -170,9 +158,6 @@ public class DroneServiceImpl implements IDroneService {
 		    }
 
 		});
-
-		// todo vérifier validité déplacements
-
 	    }
 
 	    droneModelSubject.onNext(droneModels.get(droneModels.size() - 1));

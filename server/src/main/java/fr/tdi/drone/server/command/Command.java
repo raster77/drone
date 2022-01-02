@@ -13,26 +13,31 @@ public class Command {
 
     private String verb = "";
     private List<String> parameters = new ArrayList<>();
+    private boolean message;
     private int expectedParams = 0;
 
-    public Command(String verb) {
+    public Command(String verb, boolean isMessage) {
 	this.verb = verb;
+	message = isMessage;
 	expectedParams = 0;
     }
 
-    public Command(String verb, int expectedParams) {
+    public Command(String verb, boolean isMessage, int expectedParams) {
 	this.verb = verb;
+	message = isMessage;
 	this.expectedParams = expectedParams;
     }
 
-    public Command(String verb, int expectedParams, String... params) {
+    public Command(String verb, boolean isMessage, int expectedParams, String... params) {
 	this.verb = verb;
+	message = isMessage;
 	parameters.addAll(0, Arrays.asList(params));
 	this.expectedParams = expectedParams;
     }
 
-    public Command(String verb, int expectedParams, List<String> params) {
+    public Command(String verb, boolean isMessage, int expectedParams, List<String> params) {
 	this.verb = verb;
+	message = isMessage;
 	parameters.addAll(0, params);
 	this.expectedParams = expectedParams;
     }
@@ -43,6 +48,10 @@ public class Command {
 
     public String getParameter(int index) {
 	return parameters.get(index);
+    }
+
+    public boolean isMessage() {
+	return message;
     }
 
     public void addParameter(String arg) {

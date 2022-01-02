@@ -24,16 +24,17 @@ public class DroneClient {
 
 	try {
 	    wsClient.connectBlocking();
+	    messages = wsClient.getSubjectMessages();
 	} catch (InterruptedException e) {
 	    Thread.currentThread().interrupt();
 	    wsClient = null;
 	}
-
-	messages = wsClient.getSubjectMessages();
     }
 
     public void disconnect() {
-	wsClient.close();
+	if (wsClient != null) {
+	    wsClient.close();
+	}
     }
 
     public boolean isConnected() {

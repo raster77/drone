@@ -13,23 +13,17 @@ import fr.tdi.drone.client.model.DroneModel;
 import fr.tdi.drone.client.model.ZoneModel;
 import fr.tdi.drone.client.node.DroneNode;
 import fr.tdi.drone.client.service.IDroneService;
-import fr.tdi.drone.client.service.IZoneService;
 import fr.tdi.drone.client.service.InjectionModule;
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -39,13 +33,12 @@ public class MainController implements Initializable {
     private static final String CONNECT = " Connect ";
     private static final String DISCONNECT = "Disonnect";
     private static final String SPACER = "     ";
-    private ZoneModel zone = new ZoneModel(10, 10);
+    private ZoneModel zone = new ZoneModel(0, 0);
 
     // Association drone modèle/node
     private final HashMap<Integer, Pair<DroneModel, DroneNode>> mapDrone = new HashMap<>();
 
     // Services
-    private IZoneService zoneService;
     private IDroneService droneService;
 
     @FXML
@@ -64,7 +57,6 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 	// Injection des services
 	Injector injector = Guice.createInjector(new InjectionModule());
-	zoneService = injector.getInstance(IZoneService.class);
 	droneService = injector.getInstance(IDroneService.class);
 
 	btnConnect.setText(CONNECT);
@@ -112,18 +104,10 @@ public class MainController implements Initializable {
     private void setGrid() {
 	grid.getChildren().clear();
 	for (int h = 0; h < zone.getHeight(); ++h) {
-	    ColumnConstraints c = new ColumnConstraints();
-	    c.setHgrow(Priority.SOMETIMES);
-	    c.setHalignment(HPos.CENTER);
-//	    grid.getColumnConstraints().add(c);
 	    for (int w = 0; w < zone.getWidth(); ++w) {
-		RowConstraints r = new RowConstraints();
-		r.setVgrow(Priority.SOMETIMES);
-		r.setValignment(VPos.CENTER);
 		final String id = w + "." + h;
 		StackPane pane = new StackPane();
 		pane.setId(id);
-//		grid.getRowConstraints().add(r);
 		Label lbl = new Label();
 		lbl.setText(SPACER + "\n" + SPACER + id + SPACER + "\n" + SPACER);
 		pane.getChildren().add(lbl);
@@ -143,8 +127,6 @@ public class MainController implements Initializable {
 	node.setPosY(droneModels.getPosY());
 	node.setAngle(droneModels.getAngle());
 	updateDrone(droneModels);
-
-	// todo dans droneService, verifier si mouvement valide et
     }
 
     private DroneNode createDroneNode(DroneModel drone) {
@@ -159,7 +141,6 @@ public class MainController implements Initializable {
 
     private void updateDrone(DroneModel model) {
 	writeLog("Update drone " + model.getId());
-	boolean test = zoneService.isMoveValid(model, zone);
 	DroneNode droneNode = mapDrone.get(model.getId()).getValue();
 	writeLog("Drone update");
 	final String id = droneService.getIdFromDroneModel(model);
