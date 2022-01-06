@@ -16,6 +16,7 @@ import fr.tdi.drone.client.service.IDroneService;
 import fr.tdi.drone.client.service.InjectionModule;
 import io.reactivex.Observable;
 import io.reactivex.rxjavafx.schedulers.JavaFxScheduler;
+import io.reactivex.schedulers.Schedulers;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,12 +84,13 @@ public class MainController implements Initializable {
 	    droneService.disconnect();
 	} else {
 	    droneService.connect();
-	    droneService.getDroneModel().buffer(1, TimeUnit.SECONDS).filter(l -> !l.isEmpty())
-		    .concatMap(Observable::fromIterable).concatMap(d -> Observable.just(d).delay(1, TimeUnit.SECONDS))
-		    .observeOn(JavaFxScheduler.platform()).subscribe(this::processDroneModels);
+	    droneService.getDroneModel().buffer(500, TimeUnit.MILLISECONDS, Schedulers.computation(), 1)
+		    .filter(l -> !l.isEmpty()).concatMap(Observable::fromIterable)
+		    .concatMap(d -> Observable.just(d).delay(1, TimeUnit.SECONDS)).observeOn(JavaFxScheduler.platform())
+		    .subscribe(this::processDroneModel);
 
 	    droneService.getZoneModel().observeOn(JavaFxScheduler.platform()).subscribe(zoneModel -> {
-		writeLog("New zone def : " + zoneModel.getWidth() + " " + zoneModel.getHeight());
+		writeLog("Zone : " + zoneModel.getWidth() + " " + zoneModel.getHeight());
 		zone.setWidth(zoneModel.getWidth());
 		zone.setHeight(zoneModel.getHeight());
 		setGrid();
@@ -116,33 +118,34 @@ public class MainController implements Initializable {
 	}
     }
 
-    private void processDroneModels(DroneModel droneModels) {
-	writeLog("Traitement du drone " + droneModels.getId());
-	if (!mapDrone.containsKey(droneModels.getId())) {
-	    mapDrone.put(droneModels.getId(), new Pair<>(droneModels, createDroneNode(droneModels)));
+    private void processDroneModel(DroneModel droneModel) {
+	String logMsg = "Traitement du drone " + droneModel.getId();
+	logMsg += " " + droneModel.getPosX() + "." + droneModel.getPosY() + " " + droneModel.getAngle();
+	writeLog(logMsg);
+	if (!mapDrone.containsKey(droneModel.getId())) {
+	    mapDrone.put(droneModel.getId(), new Pair<>(droneModel, createDroneNode(droneModel)));
 	}
-	DroneNode node = mapDrone.get(droneModels.getId()).getValue();
-	node.setPosX(droneModels.getPosX());
-	writeLog("node X = " + node.getPosX());
-	node.setPosY(droneModels.getPosY());
-	node.setAngle(droneModels.getAngle());
-	updateDrone(droneModels);
+	DroneNode node = mapDrone.get(droneModel.getId()).getValue();
+	node.setPosX(droneModel.getPosX());
+	node.setPosY(droneModel.getPosY());
+	node.setAngle(droneModel.getAngle());
+	updateDrone(droneModel);
     }
 
     private DroneNode createDroneNode(DroneModel drone) {
 	// Listener sur les propriétés x, y, et angle afin de mettre à jour le droneNode
 	DroneNode node = new DroneNode();
+
 	ChangeListener<Number> droneChangeListener = (observable, oldValue, newValue) -> updateDrone(drone);
 	node.angleProperty().addListener(droneChangeListener);
 	node.posYProperty().addListener(droneChangeListener);
 	node.posXProperty().addListener(droneChangeListener);
+
 	return node;
     }
 
     private void updateDrone(DroneModel model) {
-	writeLog("Update drone " + model.getId());
 	DroneNode droneNode = mapDrone.get(model.getId()).getValue();
-	writeLog("Drone update");
 	final String id = droneService.getIdFromDroneModel(model);
 	Optional<Node> nodeOpt = grid.getChildren().stream().filter(n -> id.equals(n.getId())).findFirst();
 	if (nodeOpt.isPresent()) {

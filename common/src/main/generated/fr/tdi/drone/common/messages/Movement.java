@@ -13,13 +13,13 @@ public enum Movement
    */
   A(0),
   /**
-   * <code>D = 1;</code>
+   * <code>R = 1;</code>
    */
-  D(1),
+  R(1),
   /**
-   * <code>G = 2;</code>
+   * <code>L = 2;</code>
    */
-  G(2),
+  L(2),
   UNRECOGNIZED(-1),
   ;
 
@@ -28,13 +28,13 @@ public enum Movement
    */
   public static final int A_VALUE = 0;
   /**
-   * <code>D = 1;</code>
+   * <code>R = 1;</code>
    */
-  public static final int D_VALUE = 1;
+  public static final int R_VALUE = 1;
   /**
-   * <code>G = 2;</code>
+   * <code>L = 2;</code>
    */
-  public static final int G_VALUE = 2;
+  public static final int L_VALUE = 2;
 
 
   public final int getNumber() {
@@ -56,8 +56,8 @@ public enum Movement
   public static Movement forNumber(int value) {
     switch (value) {
       case 0: return A;
-      case 1: return D;
-      case 2: return G;
+      case 1: return R;
+      case 2: return L;
       default: return null;
     }
   }

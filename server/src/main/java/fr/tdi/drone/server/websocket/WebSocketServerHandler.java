@@ -11,7 +11,6 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
-import fr.tdi.drone.server.app.ServerApp;
 
 /**
  * @author Thierry
@@ -19,7 +18,7 @@ import fr.tdi.drone.server.app.ServerApp;
  */
 public class WebSocketServerHandler extends WebSocketServer {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(ServerApp.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WebSocketServerHandler.class);
     private boolean listenning = false;
 
     public WebSocketServerHandler(int port) {

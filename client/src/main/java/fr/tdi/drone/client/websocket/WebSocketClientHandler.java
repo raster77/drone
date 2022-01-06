@@ -17,7 +17,7 @@ import io.reactivex.subjects.Subject;
 
 public class WebSocketClientHandler extends WebSocketClient {
 
-    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WebSocketClient.class);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(WebSocketClientHandler.class);
     private boolean connected = false;
     private final Subject<Message> subjectMessages = BehaviorSubject.create();
 
@@ -39,7 +39,6 @@ public class WebSocketClientHandler extends WebSocketClient {
 
     @Override
     public void onMessage(ByteBuffer blob) {
-	LOGGER.info("Binary message");
 	try {
 	    Message msg = Message.parseFrom(blob.array());
 	    subjectMessages.onNext(msg);

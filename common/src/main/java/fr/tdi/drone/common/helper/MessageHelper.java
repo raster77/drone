@@ -28,9 +28,9 @@ public class MessageHelper {
 
 	switch (s.toUpperCase()) {
 	case "D":
-	    return Movement.D;
+	    return Movement.R;
 	case "G":
-	    return Movement.G;
+	    return Movement.L;
 	case "A":
 	    return Movement.A;
 	default:

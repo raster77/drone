@@ -32,8 +32,8 @@ public class DroneServiceImpl implements IDroneService {
     private ZoneServiceImpl zoneService;
 
     private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(DroneServiceImpl.class);
-    private static final int DROITE = 90;
-    private static final int GAUCHE = -90;
+    private static final int RIGHT = 90;
+    private static final int LEFT = -90;
     private final List<DroneModel> droneModels = new ArrayList<>();
     private final Subject<DroneModel> droneModelSubject = BehaviorSubject.create();
 
@@ -86,7 +86,6 @@ public class DroneServiceImpl implements IDroneService {
     }
 
     private void processMessage(Message msg) {
-	LOGGER.info("processMessage: {}", msg);
 	switch (msg.getMessageType()) {
 	case ZONE:
 	    processZone(msg);
@@ -113,12 +112,18 @@ public class DroneServiceImpl implements IDroneService {
     private void processDrone(Message msg) {
 	try {
 	    Drone drone = Drone.parseFrom(msg.getDatas());
-	    DroneModel refDrone = droneModels.stream().filter(d -> d.getId() == drone.getId()).findFirst().orElse(null);
-	    droneModels.add(mapDroneToModel(drone, refDrone));
-	    DroneModel currentDrone = refDrone == null ? droneModels.get(droneModels.size() - 1) : refDrone;
-	    List<DroneModel> drones = new ArrayList<>();
-	    drones.add(currentDrone);
-	    drones.forEach(droneModelSubject::onNext);
+	    Optional<DroneModel> optRefDrone = droneModels.stream().filter(d -> d.getId() == drone.getId()).findFirst();
+	    if (optRefDrone.isPresent()) {
+		optRefDrone.get().setPosX(drone.getPosition().getX());
+		optRefDrone.get().setPosY(drone.getPosition().getY());
+		optRefDrone.get()
+			.setAngle(OrientationHelper.getAngleFromOrientation(drone.getPosition().getOrientation()));
+	    } else {
+		optRefDrone = Optional.of(mapDroneToModel(drone));
+		droneModels.add(optRefDrone.get());
+	    }
+
+	    droneModelSubject.onNext(optRefDrone.get());
 	} catch (InvalidProtocolBufferException e) {
 	    e.printStackTrace();
 	}
@@ -132,6 +137,7 @@ public class DroneServiceImpl implements IDroneService {
 	    if (optRefDrone.isPresent()) {
 		DroneModel ref = optRefDrone.get();
 		move.getMovesList().forEach(m -> {
+		    LOGGER.info("Move : {}", m);
 
 		    DroneModel d = new DroneModel(ref);
 		    boolean computeMove = false;
@@ -139,16 +145,16 @@ public class DroneServiceImpl implements IDroneService {
 		    case A:
 			computeMove = true;
 			break;
-		    case D:
-			d.setAngle(d.getAngle() + DROITE);
+		    case R:
+			d.setAngle(d.getAngle() + RIGHT);
 			break;
-		    case G:
-			d.setAngle(d.getAngle() + GAUCHE);
+		    case L:
+			d.setAngle(d.getAngle() + LEFT);
 			break;
 		    default:
 			break;
 		    }
-		    // todo vérifier les déplacements par rapport à l'orientation
+
 		    d = moveDrone(d, computeMove);
 		    if (d.hasChanged(ref)) {
 			droneModelSubject.onNext(d);
@@ -197,10 +203,8 @@ public class DroneServiceImpl implements IDroneService {
 
     }
 
-    private DroneModel mapDroneToModel(Drone d, DroneModel m) {
-	if (m == null) {
-	    m = new DroneModel(d.getId());
-	}
+    private DroneModel mapDroneToModel(Drone d) {
+	DroneModel m = new DroneModel(d.getId());
 	m.setPosX(d.getPosition().getX());
 	m.setPosY(d.getPosition().getY());
 	m.setAngle(OrientationHelper.getAngleFromOrientation(d.getPosition().getOrientation()));

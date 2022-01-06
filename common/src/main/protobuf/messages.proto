@@ -13,8 +13,8 @@ enum Orientation {
 
 enum Movement {
   A = 0;
-  D = 1;
-  G = 2;
+  R = 1;
+  L = 2;
 }
 
 enum MessageType {

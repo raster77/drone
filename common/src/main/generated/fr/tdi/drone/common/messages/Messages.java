@@ -57,8 +57,8 @@ public final class Messages {
       "eight\030\002 \001(\005\";\n\007Message\022!\n\013messageType\030\001 " +
       "\001(\0162\014.MessageType\022\r\n\005datas\030\002 \001(\014*9\n\013Orie" +
       "ntation\022\t\n\005NORTH\020\000\022\010\n\004EAST\020Z\022\n\n\005SOUTH\020\264\001" +
-      "\022\t\n\004WEST\020\216\002*\037\n\010Movement\022\005\n\001A\020\000\022\005\n\001D\020\001\022\005\n",
-      "\001G\020\002*,\n\013MessageType\022\010\n\004ZONE\020\000\022\t\n\005DRONE\020\001" +
+      "\022\t\n\004WEST\020\216\002*\037\n\010Movement\022\005\n\001A\020\000\022\005\n\001R\020\001\022\005\n",
+      "\001L\020\002*,\n\013MessageType\022\010\n\004ZONE\020\000\022\t\n\005DRONE\020\001" +
       "\022\010\n\004MOVE\020\002B\"\n\034fr.tdi.drone.common.messag" +
       "esH\001P\001b\006proto3"
     };
